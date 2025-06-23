@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRETA ODLICZANKO 🌅</title>
+  <title>KRETA ODLICZANKO 🌅💣</title>
   <style>
     html, body {
       margin: 0;
@@ -13,9 +13,9 @@
       color: white;
       text-align: center;
       background: linear-gradient(to top, #2b1055, #7597de);
-      height: 100vh;
-      background-size: cover;
+      background-size: 400% 400%;
       animation: gradientMove 20s ease infinite;
+      height: 100vh;
     }
 
     @keyframes gradientMove {
@@ -79,7 +79,7 @@
       }
     }
 
-    .firework {
+    .firework, .explosion {
       position: fixed;
       width: 6px;
       height: 6px;
@@ -109,10 +109,23 @@
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-100vh); opacity: 0; }
     }
+
+    .bomb {
+      position: fixed;
+      top: -40px;
+      font-size: 2em;
+      animation: dropBomb 5s linear forwards;
+      z-index: 998;
+    }
+
+    @keyframes dropBomb {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(110vh); }
+    }
   </style>
 </head>
 <body>
-  <h1>Odliczanko do Krety! 🌴🇬🇷</h1>
+  <h1>Odliczanko do Krety! 🌴🇬🇷💣</h1>
   <div id="countdown">Liczymy dni do lotu...</div>
 
   <div id="factBox">Kliknij przycisk, żeby poznać ciekawostkę o Krecie!</div><br>
@@ -130,7 +143,6 @@
     setInterval(() => {
       const now = new Date().getTime();
       const distance = endDate - now;
-
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -155,9 +167,10 @@
       const factBox = document.getElementById("factBox");
       const randomFact = facts[Math.floor(Math.random() * facts.length)];
       factBox.textContent = randomFact;
+      createExplosion(); // boom po kliknięciu
     }
 
-    // Palmy lecą
+    // Lecące palmy
     setInterval(() => {
       const palm = document.createElement("div");
       palm.classList.add("palm");
@@ -167,15 +180,29 @@
       setTimeout(() => palm.remove(), 10000);
     }, 3000);
 
-    // Fajerwerki losowe
+    // Losowe fajerwerki
     setInterval(() => {
+      createExplosion();
+    }, 1500);
+
+    function createExplosion() {
       const fw = document.createElement("div");
-      fw.className = "firework";
+      fw.className = "explosion";
       fw.style.left = Math.random() * 100 + "vw";
       fw.style.top = Math.random() * 80 + "vh";
       document.body.appendChild(fw);
       setTimeout(() => fw.remove(), 1000);
-    }, 1500);
+    }
+
+    // Lecące bomby
+    setInterval(() => {
+      const bomb = document.createElement("div");
+      bomb.className = "bomb";
+      bomb.style.left = Math.random() * 100 + "vw";
+      bomb.textContent = "💣";
+      document.body.appendChild(bomb);
+      setTimeout(() => bomb.remove(), 5000);
+    }, 2500);
   </script>
 </body>
 </html>
