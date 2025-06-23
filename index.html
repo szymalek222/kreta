@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KRETA 2025 - Odliczanko</title>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1549887534-2035dc2f3f0f?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      backdrop-filter: brightness(0.9);
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-top: 40px;
+      text-shadow: 2px 2px 5px black;
+    }
+
+    #countdown {
+      font-size: 2em;
+      margin-top: 10px;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    #meme {
+      margin: 30px auto;
+      max-width: 90%;
+      border: 4px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    #refreshMeme, #nextFact {
+      margin-top: 10px;
+      background-color: white;
+      color: #2f80ed;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    #refreshMeme:hover, #nextFact:hover {
+      background-color: #f0f0f0;
+    }
+
+    #factBox {
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      margin: 20px auto;
+      padding: 15px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      font-size: 1.1em;
+      box-shadow: 0 0 10px black;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Odliczanko do Krety 🏝️</h1>
+  <div id="countdown">Ładowanie...</div>
+
+  <!-- MEM -->
+  <div>
+    <img id="meme" src="" alt="Meme z wakacji" width="400" />
+    <br/>
+    <button id="refreshMeme">Pokaż inny mem 😎</button>
+  </div>
+
+  <!-- CIEKAWOSTKI -->
+  <div id="factBox">Ładowanie ciekawostki...</div>
+  <button id="nextFact">Losuj ciekawostkę 🧠</button>
+
+  <!-- AUDIO -->
+  <audio autoplay loop>
+    <source src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Polska_-_Rota.ogg" type="audio/ogg">
+    Twoja przeglądarka nie wspiera audio.
+  </audio>
+
+  <canvas id="confetti"></canvas>
+
+  <!-- JS -->
+  <script>
+    // Odliczanie
+    const countdown = document.getElementById('countdown');
+    const vacationDate = new Date("2025-08-20T00:00:00");
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = vacationDate - now;
+
+      if (diff <= 0) {
+        countdown.innerHTML = "WAKACJE NA KRECIE CZAS START! 🌞✈️";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      countdown.innerHTML = `${days} dni ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+
+  <!-- Konfetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    setInterval(() => {
+      confetti({
+        particleCount: 100,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+    }, 6000);
+  </script>
+
+  <!-- MEMY -->
+  <script>
+    const memeUrls = [
+      "https://i.imgflip.com/1ur9b0.jpg",
+      "https://i.imgur.com/HyO5P8L.jpeg",
+      "https://i.imgur.com/EcFjizH.jpeg",
+      "https://i.imgur.com/TJK3LWN.jpeg",
+      "https://i.imgur.com/MNujzS9.jpeg",
+      "https://i.imgur.com/Y08mZ1U.jpeg"
+    ];
+
+    const memeImg = document.getElementById("meme");
+    const refreshBtn = document.getElementById("refreshMeme");
+
+    function showRandomMeme() {
+      const index = Math.floor(Math.random() * memeUrls.length);
+      memeImg.src = memeUrls[index];
+    }
+
+    refreshBtn.addEventListener("click", showRandomMeme);
+    showRandomMeme();
+  </script>
+
+  <!-- CIEKAWOSTKI O KRECIE -->
+  <script>
+    const facts = [
+      "Kreta to największa wyspa Grecji i piąta największa w całym basenie Morza Śródziemnego.",
+      "Na Krecie urodził się mityczny bóg Zeus – według mitologii ukryty w jaskini przed swoim ojcem Kronosem.",
+      "Na Krecie znajduje się pałac w Knossos – centrum starożytnej cywilizacji minojskiej.",
+      "Kreteńczycy słyną z długowieczności – to jedno z najzdrowszych miejsc na świecie!",
+      "Kreta ma ponad 1000 kilometrów linii brzegowej z dziesiątkami niesamowitych plaż.",
+      "Słynna plaża Elafonissi wygląda jak z Karaibów – z różowym piaskiem!",
+      "Na Krecie można zjeść świeże dakosy, souvlaki i napić się raki – lokalnego alkoholu."
+    ];
+
+    const factBox = document.getElementById("factBox");
+    const nextFactBtn = document.getElementById("nextFact");
+
+    function showRandomFact() {
+      const index = Math.floor(Math.random() * facts.length);
+      factBox.innerText = facts[index];
+    }
+
+    nextFactBtn.addEventListener("click", showRandomFact);
+    showRandomFact();
+  </script>
+
+</body>
+</html>
