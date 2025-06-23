@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRETA ODLICZANKO 🌅</title>
+  <title>KRETA ODLICZANKO 🌴🍹</title>
   <style>
     html, body {
       margin: 0;
@@ -12,13 +12,13 @@
       overflow: hidden;
       color: white;
       text-align: center;
-      background: linear-gradient(to top, #2b1055, #7597de);
       height: 100vh;
-      background-size: 200% 200%;
-      animation: gradientMove 20s ease infinite;
+      background: linear-gradient(to top, #f7971e, #ffd200, #86fde8, #acb6e5);
+      background-size: 400% 400%;
+      animation: gradientAnimation 20s ease infinite;
     }
 
-    @keyframes gradientMove {
+    @keyframes gradientAnimation {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
@@ -95,17 +95,21 @@
       100% { transform: scale(20); opacity: 0; }
     }
 
-    .palm {
+    .palm, .drink {
       position: fixed;
       bottom: -50px;
       font-size: 2em;
-      animation: floatPalm 10s linear forwards;
+      animation: floatUp 10s linear forwards;
       z-index: 999;
-      opacity: 0.8;
+      opacity: 0.9;
       pointer-events: none;
     }
 
-    @keyframes floatPalm {
+    .drink {
+      font-size: 1.8em;
+    }
+
+    @keyframes floatUp {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-100vh); opacity: 0; }
     }
@@ -133,7 +137,7 @@
   </style>
 </head>
 <body>
-  <h1>Odliczanko do Krety! 🌴🇬🇷</h1>
+  <h1>Odliczanko do Krety! 🌴🍹</h1>
   <div id="countdown">Liczymy dni do lotu...</div>
 
   <div id="factBox">Kliknij przycisk, żeby poznać ciekawostkę o Krecie!</div><br>
@@ -160,7 +164,6 @@
       countdownEl.innerHTML = `Zostało: ${days} dni, ${hours}h ${minutes}m ${seconds}s`;
     }, 1000);
 
-    // Ciekawostki
     const facts = [
       "Kreta to największa grecka wyspa! 🏝️",
       "To tutaj, według mitu, urodził się Zeus! ⚡",
@@ -176,7 +179,7 @@
       const factBox = document.getElementById("factBox");
       const randomFact = facts[Math.floor(Math.random() * facts.length)];
       factBox.textContent = randomFact;
-      triggerExplosion(); // efekt po kliknięciu
+      triggerExplosion();
     }
 
     function triggerExplosion() {
@@ -197,6 +200,16 @@
       document.body.appendChild(palm);
       setTimeout(() => palm.remove(), 10000);
     }, 3000);
+
+    // Drink lecą
+    setInterval(() => {
+      const drink = document.createElement("div");
+      drink.classList.add("drink");
+      drink.style.left = Math.random() * 100 + "vw";
+      drink.textContent = ["🍹", "🍸", "🍾", "🥂"][Math.floor(Math.random() * 4)];
+      document.body.appendChild(drink);
+      setTimeout(() => drink.remove(), 10000);
+    }, 2500);
 
     // Fajerwerki losowe
     setInterval(() => {
