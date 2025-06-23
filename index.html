@@ -9,7 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Comic Sans MS', cursive;
-      overflow: hidden;
+      overflow-x: hidden;
       color: white;
       text-align: center;
       height: 100vh;
@@ -134,19 +134,48 @@
         opacity: 0;
       }
     }
+
+    /* Flappy Bird canvas style */
+    #gameContainer {
+      position: relative;
+      width: 400px;
+      margin: 30px auto;
+      background: #70c5ce;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    #gameCanvas {
+      display: block;
+      background: #70c5ce;
+      border-radius: 15px;
+      cursor: pointer;
+    }
+
+    #score {
+      color: white;
+      font-size: 1.3em;
+      margin-top: 5px;
+      text-shadow: 1px 1px 3px black;
+    }
+    #startButton {
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
-  <h1>Odliczanko do Krety! 🌴🍹</h1>
+  <h1>Rozpierdol na krecie za 🌴🍹</h1>
   <div id="countdown">Liczymy dni do lotu...</div>
 
   <div id="factBox">Kliknij przycisk, żeby poznać ciekawostkę o Krecie!</div><br>
   <button onclick="showFact()">🎓 Pokaż ciekawostkę</button>
 
   <audio autoplay loop>
-    <source src="/nutka.mp3" type="audio/mpeg">
+    <source src="nutka.mp3" type="audio/mpeg">
   </audio>
-
 
   <script>
     // Countdown
@@ -166,14 +195,19 @@
     }, 1000);
 
     const facts = [
-      "Kreta to największa grecka wyspa! 🏝️",
-      "To tutaj, według mitu, urodził się Zeus! ⚡",
-      "Miasto Chania słynie z zachodów słońca jak z bajki 🌅",
-      "Wąwóz Samaria ma aż 16 km długości! ⛰️",
-      "Na Krecie znajdziesz pałac w Knossos – kolebkę cywilizacji minojskiej 🏛️",
-      "Kreteńska kuchnia uważana jest za jedną z najzdrowszych na świecie 🥗",
-      "Wino i oliwa z Krety mają status regionalnych skarbów 🍷🫒",
-      "Plaża Elafonisi ma różowy piasek! 🩷🌊"
+      "Doskonale znane są wszystkim różne mity greckie. Ten, których bohaterowie to Dedal i Ikar, miał miejsce właśnie na Krecie. Król Minos więził ich w labiryncie, dlatego ojciec i syn postanowili, że uciekną z wyspy, wzbijając się w powietrze na własnoręcznie wykonanych skrzydłach. Ta historia, choć jest symbolem determinacji w dążeniu do realizacji własnych celów, niestety zakończyła się tragicznie. 🏝️",
+      "W mitologii greckiej Zeus był uznawany za najwyższego z bogów. Miejscem jego narodzin jest właśnie Kreta, gdzie uciekła jego matka Reja, będąc w ciąży. ⚡",
+      "Charakterystycznym gadżetem dla mężczyzn w różnym wieku jest komboloi, czyli sznurek, na który nawleczono duże koraliki. Takie akcesoria służą do zabawy – należy je przewracać między palcami.",
+      "Przemierzając kreteńskie drogi, na pewno zauważy się wiele usytuowanych na poboczach kapliczek. Te niewielkie budynki powstają, gdy dojdzie do wypadku samochodowego. Z jednej strony są one upamiętnieniem ofiar takiego zdarzenia, z drugiej strony często stawia się je jako podziękowanie za to, że się przeżyło.",
+      "Jedną z ulubionych rozrywek dla Kreteńczyków jest gra o nazwie tavli. Do takiej zabawy potrzebny jest odpowiedni sprzęt, a dokładniej: plansza (składająca się z czterech części, na których znajduje się sześć pól w kształcie trójkątów), 30 pionków (15 czarnych i 15 czerwonych) oraz 2 kostki.",
+      "Wśród atrakcji turystycznych na Krecie dużą popularnością cieszą się jaskinie – na tej wyspie jest ich ponad 3000. Największa, która została udostępniona do zwiedzania to jaskinia Sfendoni.",
+      "Charakterystyczne jest również bogactwo kreteńskiej flory. Na tej greckiej wyspie występuje około 2000 gatunków roślin, z czego aż 160 określa się mianem endemitów, co oznacza, że rosną one wyłącznie w tym rejonie, nigdzie indziej nie można ich znaleźć.",
+      "Najwyższym szczytem na Krecie jest Psiloritis, którego wysokość wynosi 2456 m n.p.m., a więc niemal tyle samo, co nasze polskie Rysy.",
+      "Linia brzegowa Krety ma długość około 1040 kilometrów.",
+      "Główne miasta Krety to: Heraklion, Chania, Retimno oraz Jerapetra.",
+      "Wyspa ta słynie także z wielu wąwozów. Najpopularniejsze wąwozy to: Samaria, Imbros, Richtis oraz Kourtaliotiko.",
+      "Na Krecie znajduje się pięć lotnisk, z czego tylko trzy są wykorzystywane do lotów pasażerskich.",
+      "Na Krecie kręcono zdjęcia do filmu „Rozgrywka”, w którym zagrali: Viggo Mortensen oraz Kirsten Dunst oraz film „Grek Zorba” z 1964 roku, który wyreżyserował Mihalis Kakogiannis",
     ];
 
     function showFact() {
@@ -207,30 +241,203 @@
       const drink = document.createElement("div");
       drink.classList.add("drink");
       drink.style.left = Math.random() * 100 + "vw";
-      drink.textContent = ["🍹", "🍸", "🍾", "🥂"][Math.floor(Math.random() * 4)];
+      drink.textContent = ["🍹", "🍸", "🍷", "🥃"][Math.floor(Math.random()*4)];
       document.body.appendChild(drink);
       setTimeout(() => drink.remove(), 10000);
-    }, 2500);
+    }, 4000);
 
-    // Fajerwerki losowe
-    setInterval(() => {
-      const fw = document.createElement("div");
-      fw.className = "firework";
-      fw.style.left = Math.random() * 100 + "vw";
-      fw.style.top = Math.random() * 80 + "vh";
-      document.body.appendChild(fw);
-      setTimeout(() => fw.remove(), 1000);
-    }, 1200);
-
-    // Latające bomby
+    // Bomby lecą
     setInterval(() => {
       const bomb = document.createElement("div");
-      bomb.className = "bomb";
-      bomb.textContent = "💣";
+      bomb.classList.add("bomb");
       bomb.style.left = Math.random() * 100 + "vw";
+      bomb.textContent = "💣";
       document.body.appendChild(bomb);
       setTimeout(() => bomb.remove(), 5000);
-    }, 2000);
+    }, 8000);
   </script>
+
+  <!-- FLAPPY BIRD -->
+  <br>
+  <button id="startButton">Start</button>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="400" height="600" title="Kliknij lub spację, aby latać!"></canvas>
+    <div id="score">Wynik: 0</div>
+  </div>
+
+  <script>
+    const startButton = document.getElementById("startButton");
+    const gameContainer = document.getElementById("gameContainer");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+
+    // Obrazki
+    const birdImg = new Image();
+    const bottleImg = new Image();
+    birdImg.src = "https://i.imgur.com/5b2fK2W.png";  // Twarz kolegi
+    bottleImg.src = "https://i.imgur.com/0FQp1Vb.png"; // Butelka wódki
+
+    // Parametry gry
+    let bird;
+    let bottles;
+    let bottleWidth = 60;
+    let gap = 150;
+    let frameCount;
+    let score;
+    let gameOver;
+    let animationId;
+
+    function resetGame() {
+      bird = {
+        x: 80,
+        y: 150,
+        width: 50,
+        height: 50,
+        gravity: 0.6,
+        lift: -12,
+        velocity: 0
+      };
+      bottles = [];
+      frameCount = 0;
+      score = 0;
+      gameOver = false;
+      scoreEl.textContent = "Wynik: 0";
+    }
+
+    function createBottle() {
+  // Maksymalna wysokość górnej butelki
+  const maxBottleHeight = 250;
+  // Minimalna wysokość dolnej butelki (np. 50)
+  const minBottleHeight = 50;
+
+  // Wylosuj wysokość górnej butelki, max 250px, min 50px
+  let topBottleHeight = Math.floor(Math.random() * (maxBottleHeight - minBottleHeight)) + minBottleHeight;
+  // Dolna butelka zaczyna się od (topBottleHeight + gap)
+  let bottomBottleY = topBottleHeight + gap;
+  // Wysokość dolnej butelki - od dolnej krawędzi dolnej butelki do końca canvasu
+  let bottomBottleHeight = canvas.height - bottomBottleY;
+
+  bottles.push({
+    x: canvas.width,
+    topHeight: topBottleHeight,
+    bottomY: bottomBottleY,
+    bottomHeight: bottomBottleHeight,
+    width: bottleWidth
+  });
+}
+
+
+    function drawBird() {
+      ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    }
+
+    function drawBottles() {
+  bottles.forEach(bottle => {
+    // górna butelka
+    ctx.drawImage(bottleImg, bottle.x, 0, bottle.width, bottle.topHeight);
+    // dolna butelka
+    ctx.drawImage(bottleImg, bottle.x, bottle.bottomY, bottle.width, bottle.bottomHeight);
+  });
+}
+
+function checkCollision() {
+  if (bird.y + bird.height > canvas.height || bird.y < 0) {
+    gameOver = true;
+  }
+  for (let bottle of bottles) {
+    // Sprawdzamy kolizję ptaka z górną butelką
+    if (
+      bird.x < bottle.x + bottle.width &&
+      bird.x + bird.width > bottle.x &&
+      bird.y < bottle.topHeight
+    ) {
+      gameOver = true;
+    }
+    // Sprawdzamy kolizję ptaka z dolną butelką
+    if (
+      bird.x < bottle.x + bottle.width &&
+      bird.x + bird.width > bottle.x &&
+      bird.y + bird.height > bottle.bottomY
+    ) {
+      gameOver = true;
+    }
+  }
+}
+    function update() {
+      if (gameOver) {
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "red";
+        ctx.fillText("Koniec gry!", canvas.width / 2 - 100, canvas.height / 2);
+        ctx.font = "20px Arial";
+        ctx.fillText("Kliknij lub spację, aby zagrać ponownie", canvas.width / 2 - 140, canvas.height / 2 + 30);
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      bird.velocity += bird.gravity;
+      bird.velocity *= 0.9;
+      bird.y += bird.velocity;
+
+      if (frameCount % 90 === 0) {
+        createBottle();
+      }
+
+      bottles.forEach(bottle => {
+        bottle.x -= 3;
+      });
+
+      if (bottles.length && bottles[0].x + bottleWidth < 0) {
+        bottles.shift();
+        score++;
+        scoreEl.textContent = "Wynik: " + score;
+      }
+
+      drawBird();
+      drawBottles();
+      checkCollision();
+
+      frameCount++;
+      animationId = requestAnimationFrame(update);
+    }
+
+    // Sterowanie ptakiem
+    function flap() {
+      bird.velocity = bird.lift;
+      if (gameOver) {
+        startGame();
+      }
+    }
+
+    window.addEventListener("keydown", e => {
+      if (e.code === "Space") {
+        flap();
+      }
+    });
+
+    canvas.addEventListener("click", flap);
+
+    function startGame() {
+      resetGame();
+      gameContainer.style.display = "block";
+      startButton.style.display = "none";
+      birdImg.onload = () => {
+        bottleImg.onload = () => {
+          if(animationId) cancelAnimationFrame(animationId);
+          update();
+        };
+      };
+      // Jeśli obrazki już są załadowane, od razu start
+      if (birdImg.complete && bottleImg.complete) {
+        if(animationId) cancelAnimationFrame(animationId);
+        update();
+      }
+    }
+
+    startButton.addEventListener("click", startGame);
+  </script>
+
+
 </body>
 </html>
