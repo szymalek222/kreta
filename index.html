@@ -301,43 +301,64 @@
     }
 
     function createBottle() {
-      let bottleHeight = Math.floor(Math.random() * (canvas.height - gap - 100)) + 50;
-      bottles.push({
-        x: canvas.width,
-        y: bottleHeight,
-        width: bottleWidth,
-        height: canvas.height - bottleHeight
-      });
-    }
+  // Maksymalna wysokość górnej butelki
+  const maxBottleHeight = 250;
+  // Minimalna wysokość dolnej butelki (np. 50)
+  const minBottleHeight = 50;
+
+  // Wylosuj wysokość górnej butelki, max 250px, min 50px
+  let topBottleHeight = Math.floor(Math.random() * (maxBottleHeight - minBottleHeight)) + minBottleHeight;
+  // Dolna butelka zaczyna się od (topBottleHeight + gap)
+  let bottomBottleY = topBottleHeight + gap;
+  // Wysokość dolnej butelki - od dolnej krawędzi dolnej butelki do końca canvasu
+  let bottomBottleHeight = canvas.height - bottomBottleY;
+
+  bottles.push({
+    x: canvas.width,
+    topHeight: topBottleHeight,
+    bottomY: bottomBottleY,
+    bottomHeight: bottomBottleHeight,
+    width: bottleWidth
+  });
+}
+
 
     function drawBird() {
       ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
     }
 
     function drawBottles() {
-      bottles.forEach(bottle => {
-        // górna butelka
-        ctx.drawImage(bottleImg, bottle.x, 0, bottle.width, bottle.y - gap);
-        // dolna butelka
-        ctx.drawImage(bottleImg, bottle.x, bottle.y, bottle.width, canvas.height - bottle.y);
-      });
-    }
+  bottles.forEach(bottle => {
+    // górna butelka
+    ctx.drawImage(bottleImg, bottle.x, 0, bottle.width, bottle.topHeight);
+    // dolna butelka
+    ctx.drawImage(bottleImg, bottle.x, bottle.bottomY, bottle.width, bottle.bottomHeight);
+  });
+}
 
-    function checkCollision() {
-      if (bird.y + bird.height > canvas.height || bird.y < 0) {
-        gameOver = true;
-      }
-      for (let bottle of bottles) {
-        if (
-          bird.x < bottle.x + bottle.width &&
-          bird.x + bird.width > bottle.x &&
-          (bird.y < bottle.y - gap || bird.y + bird.height > bottle.y)
-        ) {
-          gameOver = true;
-        }
-      }
+function checkCollision() {
+  if (bird.y + bird.height > canvas.height || bird.y < 0) {
+    gameOver = true;
+  }
+  for (let bottle of bottles) {
+    // Sprawdzamy kolizję ptaka z górną butelką
+    if (
+      bird.x < bottle.x + bottle.width &&
+      bird.x + bird.width > bottle.x &&
+      bird.y < bottle.topHeight
+    ) {
+      gameOver = true;
     }
-
+    // Sprawdzamy kolizję ptaka z dolną butelką
+    if (
+      bird.x < bottle.x + bottle.width &&
+      bird.x + bird.width > bottle.x &&
+      bird.y + bird.height > bottle.bottomY
+    ) {
+      gameOver = true;
+    }
+  }
+}
     function update() {
       if (gameOver) {
         ctx.font = "40px Arial";
