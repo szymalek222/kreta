@@ -2,19 +2,26 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Odliczanko do Krety 🌴</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KRETA ODLICZANKO 🌅</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       font-family: 'Comic Sans MS', cursive;
-      overflow-x: hidden;
+      overflow: hidden;
       color: white;
       text-align: center;
-      background: linear-gradient(180deg, #ff9a9e 0%, #fad0c4 55%, #fbc2eb 100%);
-      background-attachment: fixed;
+      background: linear-gradient(to top, #2b1055, #7597de);
       height: 100vh;
+      background-size: cover;
+      animation: gradientMove 20s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     h1 {
@@ -33,13 +40,12 @@
     #factBox {
       margin: 20px auto;
       font-size: 1.3em;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.1);
       padding: 15px;
       border-radius: 12px;
       display: inline-block;
       max-width: 80%;
-      box-shadow: 0 0 10px rgba(255,255,255,0.4);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(5px);
     }
 
     button {
@@ -52,7 +58,6 @@
       cursor: pointer;
       font-size: 1em;
       transition: all 0.2s ease;
-      box-shadow: 0 0 10px rgba(255,255,255,0.3);
     }
 
     button:hover {
@@ -65,9 +70,29 @@
       box-shadow: 0 0 20px #ff0;
     }
 
-    #wave {
-      display: inline-block;
-      animation: waveEmoji 2s infinite;
+    @keyframes neon {
+      from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #f0f, 0 0 30px #0ff;
+      }
+      to {
+        text-shadow: 0 0 2px #fff, 0 0 5px #f0f, 0 0 10px #0ff;
+      }
+    }
+
+    .firework {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: yellow;
+      box-shadow: 0 0 15px red;
+      animation: explode 1s ease-out forwards;
+      z-index: 999;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(20); opacity: 0; }
     }
 
     .palm {
@@ -80,26 +105,6 @@
       pointer-events: none;
     }
 
-    audio {
-      display: none;
-    }
-
-    /* Animacje */
-    @keyframes neon {
-      from {
-        text-shadow: 0 0 10px #fff, 0 0 20px #f0f, 0 0 30px #0ff;
-      }
-      to {
-        text-shadow: 0 0 2px #fff, 0 0 5px #f0f, 0 0 10px #0ff;
-      }
-    }
-
-    @keyframes waveEmoji {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(15deg); }
-      75% { transform: rotate(-15deg); }
-    }
-
     @keyframes floatPalm {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-100vh); opacity: 0; }
@@ -107,20 +112,18 @@
   </style>
 </head>
 <body>
-  <h1>Odliczanko do Krety! 🇬🇷</h1>
-  <div style="font-size: 2em;">🌅 <span id="wave">🌞</span> 🌊</div>
-  <div id="countdown">Ładowanie odliczania...</div>
+  <h1>Odliczanko do Krety! 🌴🇬🇷</h1>
+  <div id="countdown">Liczymy dni do lotu...</div>
 
-  <div id="factBox">Kliknij, żeby poznać ciekawostkę o Krecie!</div><br>
-  <button onclick="showFact()">🎓 Daj ciekawostkę</button>
+  <div id="factBox">Kliknij przycisk, żeby poznać ciekawostkę o Krecie!</div><br>
+  <button onclick="showFact()">🎓 Pokaż ciekawostkę</button>
 
   <audio autoplay loop>
     <source src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Rota.ogg" type="audio/ogg">
-    Twoja przeglądarka nie obsługuje dźwięku.
   </audio>
 
   <script>
-    // Odliczanko
+    // Countdown
     const endDate = new Date("2025-08-20T00:00:00").getTime();
     const countdownEl = document.getElementById("countdown");
 
@@ -154,7 +157,7 @@
       factBox.textContent = randomFact;
     }
 
-    // Lecące palemki
+    // Palmy lecą
     setInterval(() => {
       const palm = document.createElement("div");
       palm.classList.add("palm");
@@ -162,7 +165,17 @@
       palm.textContent = "🌴";
       document.body.appendChild(palm);
       setTimeout(() => palm.remove(), 10000);
-    }, 2500);
+    }, 3000);
+
+    // Fajerwerki losowe
+    setInterval(() => {
+      const fw = document.createElement("div");
+      fw.className = "firework";
+      fw.style.left = Math.random() * 100 + "vw";
+      fw.style.top = Math.random() * 80 + "vh";
+      document.body.appendChild(fw);
+      setTimeout(() => fw.remove(), 1000);
+    }, 1500);
   </script>
 </body>
 </html>
