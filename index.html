@@ -248,40 +248,51 @@
 
   <!-- FLAPPY BIRD -->
 
+  <button id="startButton">Start</button>
   <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="600" title="Kliknij lub spację, aby latać!"></canvas>
     <div id="score">Wynik: 0</div>
   </div>
 
   <script>
+    const startButton = document.getElementById("startButton");
+    const gameContainer = document.getElementById("gameContainer");
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const scoreEl = document.getElementById("score");
 
-    // Placeholder obrazków
+    // Obrazki
     const birdImg = new Image();
     const bottleImg = new Image();
+    birdImg.src = "https://i.imgur.com/5b2fK2W.png";  // Twarz kolegi
+    bottleImg.src = "https://i.imgur.com/0FQp1Vb.png"; // Butelka wódki
 
-    // Jeśli masz obrazki, podmień te linki na własne!
-    birdImg.src = "https://i.imgur.com/5b2fK2W.png";  // Twarz kolegi - podmień URL na swój obrazek
-    bottleImg.src = "https://i.imgur.com/0FQp1Vb.png"; // Butelka wódki - podmień URL na swój obrazek
-
-    let bird = {
-      x: 80,
-      y: 150,
-      width: 50,
-      height: 50,
-      gravity: 0.6,
-      lift: -12,
-      velocity: 0
-    };
-
-    let bottles = [];
+    // Parametry gry
+    let bird;
+    let bottles;
     let bottleWidth = 60;
     let gap = 150;
-    let frameCount = 0;
-    let score = 0;
-    let gameOver = false;
+    let frameCount;
+    let score;
+    let gameOver;
+    let animationId;
+
+    function resetGame() {
+      bird = {
+        x: 80,
+        y: 150,
+        width: 50,
+        height: 50,
+        gravity: 0.6,
+        lift: -12,
+        velocity: 0
+      };
+      bottles = [];
+      frameCount = 0;
+      score = 0;
+      gameOver = false;
+      scoreEl.textContent = "Wynik: 0";
+    }
 
     function createBottle() {
       let bottleHeight = Math.floor(Math.random() * (canvas.height - gap - 100)) + 50;
@@ -307,11 +318,9 @@
     }
 
     function checkCollision() {
-      // Sprawdź kolizję z ziemią i niebem
       if (bird.y + bird.height > canvas.height || bird.y < 0) {
         gameOver = true;
       }
-      // Sprawdź kolizję z butelkami
       for (let bottle of bottles) {
         if (
           bird.x < bottle.x + bottle.width &&
@@ -329,27 +338,24 @@
         ctx.fillStyle = "red";
         ctx.fillText("Koniec gry!", canvas.width / 2 - 100, canvas.height / 2);
         ctx.font = "20px Arial";
-        ctx.fillText("Odśwież stronę, aby zagrać ponownie", canvas.width / 2 - 130, canvas.height / 2 + 30);
+        ctx.fillText("Kliknij lub spację, aby zagrać ponownie", canvas.width / 2 - 140, canvas.height / 2 + 30);
         return;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Ruch ptaka
       bird.velocity += bird.gravity;
-      bird.velocity *= 0.9; // tłumienie prędkości
+      bird.velocity *= 0.9;
       bird.y += bird.velocity;
 
       if (frameCount % 90 === 0) {
         createBottle();
       }
 
-      // Przesuwanie butelek
       bottles.forEach(bottle => {
         bottle.x -= 3;
       });
 
-      // Usuwanie butelek które wyszły z ekranu i naliczanie punktów
       if (bottles.length && bottles[0].x + bottleWidth < 0) {
         bottles.shift();
         score++;
@@ -361,32 +367,45 @@
       checkCollision();
 
       frameCount++;
-      requestAnimationFrame(update);
+      animationId = requestAnimationFrame(update);
     }
 
     // Sterowanie ptakiem
-    window.addEventListener("keydown", e => {
-      if (e.code === "Space") {
-        bird.velocity = bird.lift;
-        if (gameOver) {
-          location.reload();
-        }
-      }
-    });
-
-    canvas.addEventListener("click", () => {
+    function flap() {
       bird.velocity = bird.lift;
       if (gameOver) {
-        location.reload();
+        startGame();
+      }
+    }
+
+    window.addEventListener("keydown", e => {
+      if (e.code === "Space") {
+        flap();
       }
     });
 
-    birdImg.onload = () => {
-      bottleImg.onload = () => {
-        update();
+    canvas.addEventListener("click", flap);
+
+    function startGame() {
+      resetGame();
+      gameContainer.style.display = "block";
+      startButton.style.display = "none";
+      birdImg.onload = () => {
+        bottleImg.onload = () => {
+          if(animationId) cancelAnimationFrame(animationId);
+          update();
+        };
       };
-    };
+      // Jeśli obrazki już są załadowane, od razu start
+      if (birdImg.complete && bottleImg.complete) {
+        if(animationId) cancelAnimationFrame(animationId);
+        update();
+      }
+    }
+
+    startButton.addEventListener("click", startGame);
   </script>
+
 
 </body>
 </html>
