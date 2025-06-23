@@ -2,8 +2,8 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KRETA ODLICZANKO + DINO GAME 🦖🌴🍹</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KRETA ODLICZANKO 🌴🍹</title>
   <style>
     html, body {
       margin: 0;
@@ -135,69 +135,29 @@
       }
     }
 
-    /* ---------------- Dino Game Styles ---------------- */
-
+    /* Flappy Bird canvas style */
     #gameContainer {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90vw;
-      max-width: 600px;
-      height: 150px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 15px 15px 0 0;
-      box-shadow: 0 0 20px #0008 inset;
-      overflow: hidden;
-      user-select: none;
-      z-index: 1000;
+      position: relative;
+      width: 400px;
+      margin: 30px auto;
+      background: #70c5ce;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 
-    #ground {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 20px;
-      background: linear-gradient(to right, #654321, #3e2614);
-      box-shadow: inset 0 3px 5px #a37c4d;
+    #gameCanvas {
+      display: block;
+      background: #70c5ce;
+      border-radius: 15px;
+      cursor: pointer;
     }
 
-    #dino {
-      position: absolute;
-      bottom: 20px;
-      left: 50px;
-      width: 44px;
-      height: 47px;
-      background: url('https://i.imgur.com/INjy6QA.png') no-repeat center/contain;
-      transition: bottom 0.2s;
+    #score {
+      color: white;
+      font-size: 1.3em;
+      margin-top: 5px;
+      text-shadow: 1px 1px 3px black;
     }
-
-    #obstacle {
-      position: absolute;
-      bottom: 20px;
-      right: -50px;
-      width: 25px;
-      height: 50px;
-      background: url('https://i.imgur.com/j8bLNHb.png') no-repeat center/contain;
-      animation: moveObstacle linear forwards;
-    }
-
-    @keyframes moveObstacle {
-      from { right: -50px; }
-      to { right: 110%; }
-    }
-
-    #scoreDisplay {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 1.2em;
-      color: #fff;
-      text-shadow: 0 0 5px black;
-      font-weight: bold;
-      user-select: none;
-    }
-
   </style>
 </head>
 <body>
@@ -208,16 +168,8 @@
   <button onclick="showFact()">🎓 Pokaż ciekawostkę</button>
 
   <audio autoplay loop>
-    <source src="nutka.mp3" type="audio/mpeg" />
+    <source src="nutka.mp3" type="audio/mpeg">
   </audio>
-
-  <!-- Dino Game Container -->
-  <div id="gameContainer">
-    <div id="scoreDisplay">Wynik: 0</div>
-    <div id="dino"></div>
-    <div id="ground"></div>
-    <div id="obstacle"></div>
-  </div>
 
   <script>
     // Countdown
@@ -236,7 +188,6 @@
       countdownEl.innerHTML = `Zostało: ${days} dni, ${hours}h ${minutes}m ${seconds}s`;
     }, 1000);
 
-    // Facts
     const facts = [
       "Kreta to największa grecka wyspa! 🏝️",
       "To tutaj, według mitu, urodził się Zeus! ⚡",
@@ -279,138 +230,163 @@
       const drink = document.createElement("div");
       drink.classList.add("drink");
       drink.style.left = Math.random() * 100 + "vw";
-      drink.textContent = ["🍹", "🍸", "🍾", "🥂"][Math.floor(Math.random() * 4)];
+      drink.textContent = ["🍹", "🍸", "🍷", "🥃"][Math.floor(Math.random()*4)];
       document.body.appendChild(drink);
       setTimeout(() => drink.remove(), 10000);
-    }, 2500);
-
-    // Fajerwerki losowe
-    setInterval(() => {
-      const firework = document.createElement("div");
-      firework.className = "firework";
-      firework.style.left = Math.random() * window.innerWidth + "px";
-      firework.style.top = Math.random() * (window.innerHeight / 2) + "px";
-      document.body.appendChild(firework);
-      setTimeout(() => firework.remove(), 1000);
-    }, 2000);
+    }, 4000);
 
     // Bomby lecą
     setInterval(() => {
       const bomb = document.createElement("div");
-      bomb.className = "bomb";
-      bomb.style.left = Math.random() * window.innerWidth + "px";
+      bomb.classList.add("bomb");
+      bomb.style.left = Math.random() * 100 + "vw";
       bomb.textContent = "💣";
       document.body.appendChild(bomb);
       setTimeout(() => bomb.remove(), 5000);
     }, 8000);
+  </script>
 
-    // ---------------- Dino Game ----------------
+  <!-- FLAPPY BIRD -->
 
-    const dino = document.getElementById("dino");
-    const obstacle = document.getElementById("obstacle");
-    const scoreDisplay = document.getElementById("scoreDisplay");
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="400" height="600" title="Kliknij lub spację, aby latać!"></canvas>
+    <div id="score">Wynik: 0</div>
+  </div>
 
-    let isJumping = false;
-    let position = 20; // bottom in px
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+
+    // Placeholder obrazków
+    const birdImg = new Image();
+    const bottleImg = new Image();
+
+    // Jeśli masz obrazki, podmień te linki na własne!
+    birdImg.src = "https://i.imgur.com/5b2fK2W.png";  // Twarz kolegi - podmień URL na swój obrazek
+    bottleImg.src = "https://i.imgur.com/0FQp1Vb.png"; // Butelka wódki - podmień URL na swój obrazek
+
+    let bird = {
+      x: 80,
+      y: 150,
+      width: 50,
+      height: 50,
+      gravity: 0.6,
+      lift: -12,
+      velocity: 0
+    };
+
+    let bottles = [];
+    let bottleWidth = 60;
+    let gap = 150;
+    let frameCount = 0;
     let score = 0;
     let gameOver = false;
-    let obstacleSpeed = 3000;
 
-    function jump() {
-      if (isJumping) return;
-      isJumping = true;
-
-      let upInterval = setInterval(() => {
-        if (position >= 120) {
-          clearInterval(upInterval);
-          // fall down
-          let downInterval = setInterval(() => {
-            if (position <= 20) {
-              clearInterval(downInterval);
-              isJumping = false;
-              position = 20;
-            } else {
-              position -= 10;
-              dino.style.bottom = position + "px";
-            }
-          }, 20);
-        } else {
-          position += 15;
-          dino.style.bottom = position + "px";
-        }
-      }, 20);
+    function createBottle() {
+      let bottleHeight = Math.floor(Math.random() * (canvas.height - gap - 100)) + 50;
+      bottles.push({
+        x: canvas.width,
+        y: bottleHeight,
+        width: bottleWidth,
+        height: canvas.height - bottleHeight
+      });
     }
 
-    function startObstacle() {
-      if (gameOver) return;
+    function drawBird() {
+      ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+    }
 
-      obstacle.style.right = "-50px";
-      obstacle.style.animationDuration = obstacleSpeed + "ms";
-      obstacle.style.animationName = "moveObstacle";
+    function drawBottles() {
+      bottles.forEach(bottle => {
+        // górna butelka
+        ctx.drawImage(bottleImg, bottle.x, 0, bottle.width, bottle.y - gap);
+        // dolna butelka
+        ctx.drawImage(bottleImg, bottle.x, bottle.y, bottle.width, canvas.height - bottle.y);
+      });
+    }
 
-      obstacle.addEventListener('animationiteration', () => {
-        if (gameOver) return;
-        obstacleSpeed = Math.max(1500, obstacleSpeed - 100); // przyspieszamy
-        obstacle.style.animationDuration = obstacleSpeed + "ms";
-        score++;
-        scoreDisplay.textContent = "Wynik: " + score;
+    function checkCollision() {
+      // Sprawdź kolizję z ziemią i niebem
+      if (bird.y + bird.height > canvas.height || bird.y < 0) {
+        gameOver = true;
+      }
+      // Sprawdź kolizję z butelkami
+      for (let bottle of bottles) {
+        if (
+          bird.x < bottle.x + bottle.width &&
+          bird.x + bird.width > bottle.x &&
+          (bird.y < bottle.y - gap || bird.y + bird.height > bottle.y)
+        ) {
+          gameOver = true;
+        }
+      }
+    }
+
+    function update() {
+      if (gameOver) {
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "red";
+        ctx.fillText("Koniec gry!", canvas.width / 2 - 100, canvas.height / 2);
+        ctx.font = "20px Arial";
+        ctx.fillText("Odśwież stronę, aby zagrać ponownie", canvas.width / 2 - 130, canvas.height / 2 + 30);
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Ruch ptaka
+      bird.velocity += bird.gravity;
+      bird.velocity *= 0.9; // tłumienie prędkości
+      bird.y += bird.velocity;
+
+      if (frameCount % 90 === 0) {
+        createBottle();
+      }
+
+      // Przesuwanie butelek
+      bottles.forEach(bottle => {
+        bottle.x -= 3;
       });
 
-      moveObstacleLoop();
+      // Usuwanie butelek które wyszły z ekranu i naliczanie punktów
+      if (bottles.length && bottles[0].x + bottleWidth < 0) {
+        bottles.shift();
+        score++;
+        scoreEl.textContent = "Wynik: " + score;
+      }
+
+      drawBird();
+      drawBottles();
+      checkCollision();
+
+      frameCount++;
+      requestAnimationFrame(update);
     }
 
-    function moveObstacleLoop() {
-      if (gameOver) return;
-
-      let obstaclePos = window.innerWidth + 50;
-      obstacle.style.right = "-50px";
-
-      let moveInterval = setInterval(() => {
+    // Sterowanie ptakiem
+    window.addEventListener("keydown", e => {
+      if (e.code === "Space") {
+        bird.velocity = bird.lift;
         if (gameOver) {
-          clearInterval(moveInterval);
-          return;
-        }
-        obstaclePos -= 10;
-        obstacle.style.right = obstaclePos + "px";
-
-        // Kolizja (prosty bounding box)
-        let dinoRect = dino.getBoundingClientRect();
-        let obsRect = obstacle.getBoundingClientRect();
-
-        if (
-          obsRect.left < dinoRect.right &&
-          obsRect.right > dinoRect.left &&
-          obsRect.bottom > dinoRect.top &&
-          obsRect.top < dinoRect.bottom
-        ) {
-          // Kolizja, koniec gry
-          gameOver = true;
-          alert("Koniec gry! Twój wynik: " + score);
           location.reload();
         }
-
-        if (obstaclePos < -50) {
-          clearInterval(moveInterval);
-          if (!gameOver) {
-            score++;
-            scoreDisplay.textContent = "Wynik: " + score;
-            obstacleSpeed = Math.max(1500, obstacleSpeed - 100);
-            startObstacle();
-          }
-        }
-      }, 20);
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" || e.key === "ArrowUp") {
-        e.preventDefault();
-        jump();
       }
     });
 
-    // Start gry
-    startObstacle();
+    canvas.addEventListener("click", () => {
+      bird.velocity = bird.lift;
+      if (gameOver) {
+        location.reload();
+      }
+    });
 
+    birdImg.onload = () => {
+      bottleImg.onload = () => {
+        update();
+      };
+    };
   </script>
+
 </body>
 </html>
