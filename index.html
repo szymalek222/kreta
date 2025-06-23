@@ -2,14 +2,14 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KRETA ODLICZANKO 🌴🍹</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KRETA ODLICZANKO + DINO GAME 🦖🌴🍹</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       font-family: 'Comic Sans MS', cursive;
-      overflow: hidden;
+      overflow-x: hidden;
       color: white;
       text-align: center;
       height: 100vh;
@@ -134,6 +134,70 @@
         opacity: 0;
       }
     }
+
+    /* ---------------- Dino Game Styles ---------------- */
+
+    #gameContainer {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90vw;
+      max-width: 600px;
+      height: 150px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 15px 15px 0 0;
+      box-shadow: 0 0 20px #0008 inset;
+      overflow: hidden;
+      user-select: none;
+      z-index: 1000;
+    }
+
+    #ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 20px;
+      background: linear-gradient(to right, #654321, #3e2614);
+      box-shadow: inset 0 3px 5px #a37c4d;
+    }
+
+    #dino {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 44px;
+      height: 47px;
+      background: url('https://i.imgur.com/INjy6QA.png') no-repeat center/contain;
+      transition: bottom 0.2s;
+    }
+
+    #obstacle {
+      position: absolute;
+      bottom: 20px;
+      right: -50px;
+      width: 25px;
+      height: 50px;
+      background: url('https://i.imgur.com/j8bLNHb.png') no-repeat center/contain;
+      animation: moveObstacle linear forwards;
+    }
+
+    @keyframes moveObstacle {
+      from { right: -50px; }
+      to { right: 110%; }
+    }
+
+    #scoreDisplay {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.2em;
+      color: #fff;
+      text-shadow: 0 0 5px black;
+      font-weight: bold;
+      user-select: none;
+    }
+
   </style>
 </head>
 <body>
@@ -143,11 +207,17 @@
   <div id="factBox">Kliknij przycisk, żeby poznać ciekawostkę o Krecie!</div><br>
   <button onclick="showFact()">🎓 Pokaż ciekawostkę</button>
 
-  
   <audio autoplay loop>
-    <source src="nutka.mp3" type="audio/mpeg">
+    <source src="nutka.mp3" type="audio/mpeg" />
   </audio>
 
+  <!-- Dino Game Container -->
+  <div id="gameContainer">
+    <div id="scoreDisplay">Wynik: 0</div>
+    <div id="dino"></div>
+    <div id="ground"></div>
+    <div id="obstacle"></div>
+  </div>
 
   <script>
     // Countdown
@@ -166,6 +236,7 @@
       countdownEl.innerHTML = `Zostało: ${days} dni, ${hours}h ${minutes}m ${seconds}s`;
     }, 1000);
 
+    // Facts
     const facts = [
       "Kreta to największa grecka wyspa! 🏝️",
       "To tutaj, według mitu, urodził się Zeus! ⚡",
@@ -215,23 +286,131 @@
 
     // Fajerwerki losowe
     setInterval(() => {
-      const fw = document.createElement("div");
-      fw.className = "firework";
-      fw.style.left = Math.random() * 100 + "vw";
-      fw.style.top = Math.random() * 80 + "vh";
-      document.body.appendChild(fw);
-      setTimeout(() => fw.remove(), 1000);
-    }, 1200);
+      const firework = document.createElement("div");
+      firework.className = "firework";
+      firework.style.left = Math.random() * window.innerWidth + "px";
+      firework.style.top = Math.random() * (window.innerHeight / 2) + "px";
+      document.body.appendChild(firework);
+      setTimeout(() => firework.remove(), 1000);
+    }, 2000);
 
-    // Latające bomby
+    // Bomby lecą
     setInterval(() => {
       const bomb = document.createElement("div");
       bomb.className = "bomb";
+      bomb.style.left = Math.random() * window.innerWidth + "px";
       bomb.textContent = "💣";
-      bomb.style.left = Math.random() * 100 + "vw";
       document.body.appendChild(bomb);
       setTimeout(() => bomb.remove(), 5000);
-    }, 2000);
+    }, 8000);
+
+    // ---------------- Dino Game ----------------
+
+    const dino = document.getElementById("dino");
+    const obstacle = document.getElementById("obstacle");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+
+    let isJumping = false;
+    let position = 20; // bottom in px
+    let score = 0;
+    let gameOver = false;
+    let obstacleSpeed = 3000;
+
+    function jump() {
+      if (isJumping) return;
+      isJumping = true;
+
+      let upInterval = setInterval(() => {
+        if (position >= 120) {
+          clearInterval(upInterval);
+          // fall down
+          let downInterval = setInterval(() => {
+            if (position <= 20) {
+              clearInterval(downInterval);
+              isJumping = false;
+              position = 20;
+            } else {
+              position -= 10;
+              dino.style.bottom = position + "px";
+            }
+          }, 20);
+        } else {
+          position += 15;
+          dino.style.bottom = position + "px";
+        }
+      }, 20);
+    }
+
+    function startObstacle() {
+      if (gameOver) return;
+
+      obstacle.style.right = "-50px";
+      obstacle.style.animationDuration = obstacleSpeed + "ms";
+      obstacle.style.animationName = "moveObstacle";
+
+      obstacle.addEventListener('animationiteration', () => {
+        if (gameOver) return;
+        obstacleSpeed = Math.max(1500, obstacleSpeed - 100); // przyspieszamy
+        obstacle.style.animationDuration = obstacleSpeed + "ms";
+        score++;
+        scoreDisplay.textContent = "Wynik: " + score;
+      });
+
+      moveObstacleLoop();
+    }
+
+    function moveObstacleLoop() {
+      if (gameOver) return;
+
+      let obstaclePos = window.innerWidth + 50;
+      obstacle.style.right = "-50px";
+
+      let moveInterval = setInterval(() => {
+        if (gameOver) {
+          clearInterval(moveInterval);
+          return;
+        }
+        obstaclePos -= 10;
+        obstacle.style.right = obstaclePos + "px";
+
+        // Kolizja (prosty bounding box)
+        let dinoRect = dino.getBoundingClientRect();
+        let obsRect = obstacle.getBoundingClientRect();
+
+        if (
+          obsRect.left < dinoRect.right &&
+          obsRect.right > dinoRect.left &&
+          obsRect.bottom > dinoRect.top &&
+          obsRect.top < dinoRect.bottom
+        ) {
+          // Kolizja, koniec gry
+          gameOver = true;
+          alert("Koniec gry! Twój wynik: " + score);
+          location.reload();
+        }
+
+        if (obstaclePos < -50) {
+          clearInterval(moveInterval);
+          if (!gameOver) {
+            score++;
+            scoreDisplay.textContent = "Wynik: " + score;
+            obstacleSpeed = Math.max(1500, obstacleSpeed - 100);
+            startObstacle();
+          }
+        }
+      }, 20);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === "ArrowUp") {
+        e.preventDefault();
+        jump();
+      }
+    });
+
+    // Start gry
+    startObstacle();
+
   </script>
 </body>
 </html>
