@@ -4,6 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KRETA ODLICZANKO 🌴🍹</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBuAItM0qA6D_MkrK7dxgEmOzQVMjtz7J4",
+  authDomain: "kreta-2208b.firebaseapp.com",
+  databaseURL: "https://kreta-2208b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kreta-2208b",
+  storageBucket: "kreta-2208b.firebasestorage.app",
+  messagingSenderId: "644829928706",
+  appId: "1:644829928706:web:1e8b43d96d152b6837f61b",
+  measurementId: "G-77YZPTBL43"
+};
+
+  // Inicjalizacja Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+  
   <style>
     html, body {
       margin: 0;
@@ -264,6 +284,7 @@
     <canvas id="gameCanvas" width="400" height="600" title="Kliknij lub spację, aby latać!"></canvas>
     <div id="score">Wynik: 0</div>
   </div>
+  <div id="ranking" style="position:absolute; right: 20px; top: 20px; background:#fff; padding:10px; border:1px solid #ccc;"></div>
 
   <script>
     const startButton = document.getElementById("startButton");
@@ -287,6 +308,7 @@
     let score;
     let gameOver;
     let animationId;
+    let finalScore;
 
     function resetGame() {
       bird = {
@@ -372,6 +394,8 @@ function checkCollision() {
         ctx.font = "20px Arial";
         ctx.fillText("Morlin dotknął bogactwa", canvas.width / 2 - 160, canvas.height / 2 + 35);
         ctx.fillText("Kliknij lub spację, aby zagrać ponownie", canvas.width / 2 - 160, canvas.height / 2 + 70);
+        finalScore = score;
+        checkAndSaveScore(finalScore);
         return;
       }
 
@@ -420,6 +444,7 @@ function checkCollision() {
     canvas.addEventListener("click", flap);
 
     function startGame() {
+      loadRanking();
       resetGame();
       gameContainer.style.display = "block";
       startButton.style.display = "none";
@@ -438,7 +463,39 @@ function checkCollision() {
 
     startButton.addEventListener("click", startGame);
   </script>
+<script>
+  const scoresRef = db.ref("scores");
 
+  // Wczytanie rankingu
+  function loadRanking() {
+    scoresRef.orderByChild("score").limitToLast(10).once("value", snapshot => {
+      const data = snapshot.val();
+      const sorted = Object.values(data || {}).sort((a, b) => b.score - a.score);
+      const rankingDiv = document.getElementById("ranking");
+      rankingDiv.innerHTML = "<h3>Ranking</h3><ol>" +
+        sorted.map(entry => `<li>${entry.name}: ${entry.score}</li>`).join("") +
+        "</ol>";
+    });
+  }
+
+  // Sprawdzenie, czy nowy wynik bije ostatni wynik
+  function checkAndSaveScore(score) {
+    scoresRef.orderByChild("score").limitToLast(1).once("value", snapshot => {
+      const data = snapshot.val();
+      const minScore = data ? Object.values(data)[0].score : 0;
+
+      if (score > minScore) {
+        const nick = prompt(`Gratulacje! Twój wynik: ${score}. Wpisz nick do rankingu:`);
+        if (nick) {
+          scoresRef.push({ name: nick, score: score });
+          loadRanking();
+        }
+      } else {
+        alert(`Twój wynik: ${score}. Nie pobiłeś rekordu.`);
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
